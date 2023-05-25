@@ -1,156 +1,122 @@
 # Practice Problems 2 Answers
 
-## Problem 1
-2.
+Q1)
+
+Each insert costs 3 units of work, one to insert, and two saved for later. Once there are n inserts, there are 2n units of work banked for the copy to the
+new array and there are 2n copies needed, so the cost for an insert is O(1) over n inserts.
+
+OR
+
+Another way to look at it: for n inserts, n-1 of them will be constant, and then 1 insert will cost 2n+1 to do the insert and then copy. The average over all the n inserts is 3n/n = 3 = O(1).
+
+Q2)
+
+(I) Worst case and best case are the same: O(n)
+You either find the element near the beginning of array O(1) and remove shifts more elements O(n) or you find element near end of array O(n) and remove
+shifts few elements O(1).
+
+(II) Worst case: O(n) - element is at the beginning of the array so the search is
+linear and shifting is linear 
+
+Best case: O(1) - element is at end of the array so the search is constant and shifting is constant
+
+(III) Worst case: O(n) - either: use binary search and element is at
+beginning of array (search O(log n) + remove O(n) = O(n)). Or: use binary search and the element is in the middle of the array (search O(1) + remove O(n) =
+O(n)).
+
+Best case: O(log n) - element is at end of array (search O(log n) + remove
+O(1) = O(log n)).
+
+Q3) 
+
+(a) Returns the middle data value of the list 
+
+(b) Throws an exception since q moves off list. 
+       Avoid runtime error by advancing q one 'next' at a time, checking for null so we don't get an exception:
+       q = q.next;
+       if (q != null) q = q.next;
+
+(c) O(n) - iterates n/2 times which is O(n)
+
+Q4)
+
+(a)
+
 ```java
-        // Inserts the given date into the list in chronological order.
-        // Precondition: list is already sorted in chronological order.   
-        public static void insert(ArrayList<CalendarDate> list, CalendarDate date)
-        {
-		// Find the first date in the list that is later than the 
-		// date given in the parameter
-                int index = 0;
-                while (index < list.size() 
-                                && list.get(index).compareTo(date) < 0)
-                        index++;
-
-		// Insert the date into the list at this position
-		// (the add method will shift over the dates to make room)
-                list.add(index, date);
-        }  
-
+public SinglyLinkedList() { 
+	head = new Node<E>(null); 	// dummy node, no data
+	numElements = 0; 
+}
 ```
-3.
+
+(b)
+
 ```java
-
-       public boolean add(T newEntry) {
-           
-                // Search for index for insert point in array
-                int index = 0;
-                while (index < numData &&
-                                dataArray[index].compareTo(newEntry) <= 0) {
-                        if (dataArray[index].compareTo(newEntry) == 0)
-                                return false;   // duplicate entry - do not insert
-                        index++;
-                }
-         
-                // Check for full array: Why isn't this done before the while loop?
-                if (numData == dataArray.length)
-                        reallocate();
-
-                // Shift data over one position to make room for new data 
-                // data value at position index.                
-                for (int position = numData-1; position >= index; position--) 
-                       dataArray[position+1] = dataArray[position];
-                dataArray[index] = newEntry;
-                numData++;
-                return true;
-        }       
+public void add(int index, E element) { 
+	if (index < 0 || index > size()) 
+		throw new IndexOutOfBoundsException(); 
+	Node<E> newNode = new Node<E>(element); 
+	Node<E> nodeRef = head; 
+        for (int i = 1; i <= index; i++)  
+		nodeRef = nodeRef.next; 
+	newNode.next = nodeRef.next; 
+	nodeRef.next = newNode; 
+	numElements++; 
+} 
 ```
 
-## Problem 2
+```java
+public E remove(int index) { 
+	if (index < 0 || index >= size()) 
+		throw new IndexOutOfBoundsException(); 
+	Node<E> nodeRef = head; 
+	for (int i = 1; i <= index; i++) 
+		nodeRef = nodeRef.next; 
+	E result = nodeRef.next.data; 
+	nodeRef.next = nodeRef.next.next; 
+	implements--; 
+	return result; 
+} 
+```
 
+Q5)
+
+(a)
 
 ```java
-public class ArrayStack2<E> implements LIFOStack<E> {
-
-	// Implementation of a stack using an array
-	// with the top of the stack in position 0 always
-	// (not a very efficient way of doing things, of course)
-
-	private E[] dataArray;
-	private int bottom;
-
-	public ArrayStack2() {
-		dataArray = (E[])new Object[1];
-		bottom = -1;
+public E pop() {
+        if data.size()==0 return null;
+       else return data.remove(0);
 	}
-	
+```
+
+Runtime: O(n)  (elements have to be shifted)
+
+(b)
+
+```java
 	public void push(E element) {
-		if (bottom == dataArray.length-1)
-			reallocate();
-		for (int i = bottom; i >= 0; i--)
-			dataArray[i+1] = dataArray[i];
-		dataArray[0] = element;		// top is always at index 0
-		bottom++;
+        data.add(0,element);
 	}
-	
-	public boolean isEmpty() {
-		return bottom == -1;
-	}
+```
 
-	public E pop() {
-		if (isEmpty())
-			throw new NoSuchElementException();
-		E result = dataArray[0];
-		for (int i = 1; i <= bottom; i++)
-			dataArray[i-1] = dataArray[i];
-		bottom--;
-		return result;		
-	}
-		
-	public E peek() {
-		if (isEmpty())
-			throw new NoSuchElementException();
-		return dataArray[0];
-	}
-	
-	private void reallocate() {
-		E[] newArray = (E[]) new Object[dataArray.length*2];
-		System.arraycopy(dataArray, 0, newArray,0,dataArray.length);
-		dataArray = newArray;
-	}
+Runtime: O(n)  (elements have to be shifted)
+
+
+Q6)
+
+```java
+public static Stack<Integer> sort(Stack<Integer> s)
+{
+	Stack<Integer> r = new Stack<Integer>();
+	while(!s.isEmpty())
+    {
+	    int tmp = s.pop();
+	    while(!r.isEmpty() && r.peek() > tmp) 
+	        s.push(r.pop());
+	    r.push(tmp);
+    }
+    return r;
 }
-```
 
-2.
-```java
-public class Calculator {
-	public static void main(String[] args) {
-		Scanner scan = new Scanner(System.in);
-		InfixToPostfixGenerator generator = new InfixToPostfixGenerator();
-		PostfixEvaluator evaluator = new PostfixEvaluator();
-		try {
-			System.out.println("Input infix expression: ");
-			String infix = scan.nextLine();
-			String postfix = generator.convert(infix);
-			int value = evaluator.eval(postfix);
-			System.out.println("Value = " + value);
-		}
-		catch (SyntaxErrorException e) {
-			System.out.println("Error. Conversion terminated.");
-			System.out.println(e.getMessage());
-		}
-	}
-}
-```
-
-## Problem 3
-```java
-if (customerArrives(ARRIVAL_PROBABILITY))
-		q.add(new Customer(minute));
-
-	for (int i = 0; i < NUM_REGISTERS; i++) {
-		if (registerAvailableTimes[i] <= minute && !q.isEmpty()) {
-			Customer customer = q.remove();
-			numCustomers++;
-			totalWaitTime += minute - customer.getTimeEnteredQueue();
-			registerAvailableTimes[i] = 
-				minute + customer.getTimeNeededAtRegister();
-		}
-	}
-```
-2.
-```java
-	if (customerArrives(ARRIVAL_PROBABILITY))
-		emptiestQueue(queues).add(new Customer(minute));
-	for (int i = 0; i < NUM_REGISTERS; i++)
-		if (registerAvailableTimes[i] <= minute && !queues[i].isEmpty()) {
-			Customer customer = queues[i].remove();
-			numCustomers++;
-			totalWaitTime += minute - customer.getTimeEnteredQueue();
-			registerAvailableTimes[i] = 
-				minute + customer.getTimeNeededAtRegister();
-		}
-	}
 ```
